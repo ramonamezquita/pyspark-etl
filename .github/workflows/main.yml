@@ -2,7 +2,7 @@ name: GCP Distribution
 
 on:
   push:
-    branches: [ master ]
+    branches: [master, actions]
     
 jobs:
     build:
