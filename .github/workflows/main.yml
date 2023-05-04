@@ -1,0 +1,16 @@
+name: GCP Distribution
+
+on:
+  push:
+    branches: [ master ]
+    
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      
+      steps:
+      - name: Checkout repository content
+        uses: actions/checkout@v2 # Checkout the repository content to github runner.
+
+      - name: Build distribution
+        run: make build
