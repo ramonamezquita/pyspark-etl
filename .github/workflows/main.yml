@@ -14,3 +14,9 @@ jobs:
 
       - name: Build distribution
         run: make build
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: dist/
