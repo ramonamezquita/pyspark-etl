@@ -3,33 +3,32 @@ name: GCS Deploy
 on:
   push:
     branches: [master, actions]
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
     
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # actions/checkout MUST come before auth.
+    - name: Checkout repository content
+      uses: actions/checkout@v3
 
-  # Add "id-token" with the intended permissions.
-  permissions:
-    contents: 'read'
-    id-token: 'write'
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        workload_identity_provider: 'projects/399495472921/locations/global/workloadIdentityPools/github/providers/github'
+        service_account: 'github@studious-works-380917.iam.gserviceaccount.com'
 
-  runs-on: ubuntu-latest
-  steps:
-  # actions/checkout MUST come before auth.
-  - name: Checkout repository content
-    uses: actions/checkout@v3
+    # ... further steps are automatically authenticated.
 
-  - id: 'auth'
-    uses: 'google-github-actions/auth@v1'
-    with:
-      workload_identity_provider: 'projects/399495472921/locations/global/workloadIdentityPools/github/providers/github'
-      service_account: 'github@studious-works-380917.iam.gserviceaccount.com'
+    - name: Build distribution
+      run: make build
 
-  # ... further steps are automatically authenticated.
-
-  - name: Build distribution
-    run: make build
-
-  - id: 'upload-folder'
-    uses: 'google-github-actions/upload-cloud-storage@v1'
-    with:
-      path: dist/
-      destination: 'spark-jobs'
+    - id: 'upload-folder'
+      uses: 'google-github-actions/upload-cloud-storage@v1'
+      with:
+        path: dist/
+        destination: 'spark-jobs'
