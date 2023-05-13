@@ -1,24 +1,13 @@
-from shared.spark_starter import SparkStarter
-from shared.cloud import GoogleConfig
+from shared import default_configs, starter
+from shared.etl import ETLService
 
 
-def execute():
+def execute(etl_params=None):
+    spark_config = default_configs.Google()
+    spark = starter.start_spark(spark_config)
 
-    starter = SparkStarter(
-        app_name='ReadAndCount',
-        spark_config=GoogleConfig().pairs()
-    )
-
-    spark, log, config = starter.start()
-
-
-    path_to_csv = "gs://bronze-layer/coppel/googledrive/tb_transactions/year=2023/month=4/day=6/"
-    ddf = spark.read.csv(path_to_csv, header=True)
-    ddf.count()
+    service = ETLService()
+    etl = service.create_etl(spark, etl_params)
+    etl.execute()
 
     spark.stop()
-
-
-
-
-

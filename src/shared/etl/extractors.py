@@ -2,63 +2,48 @@
 Extractors classes.
 """
 
-from abc import ABC
-from typing import Protocol
+from abc import ABC, abstractmethod
 
-from . import _readers
-
-
-class Reader(Protocol):
-    def read(self, filepath, **kwargs):
-        ...
+from . import object_factory
 
 
 class Extractor(ABC):
     """Base abstract class. All Extractors classes extend from this.
 
-    Parameters
-    ----------
-    reader : Reader
-        Object implementing :class:`Reader` interface.
     """
 
-    def __init__(self, reader: Reader):
-        self.reader = reader
-
-    def extract(self, filepath: str, **kwargs):
+    @abstractmethod
+    def extract(self):
         """Base extract method, must be instantiated in extended classes.
         """
-        return self.reader.read(filepath, **kwargs)
-
-
-class PandasCSVExtractor(Extractor):
-
-    def __init__(self):
-        super().__init__(_readers.PandasCSVReader())
-
-
-class PandasParquetExtractor(Extractor):
-
-    def __init__(self):
-        super().__init__(_readers.PandasParquetReader())
+        pass
 
 
 class SparkCSVExtractor(Extractor):
     """Extracts CSV files into Spark DataFrame.
     """
 
-    def __init__(self, spark):
-        super().__init__(_readers.SparkCSVReader(spark))
+    def __init__(self, spark, filepath, **kwargs):
+        self.spark = spark
+        self.filepath = filepath
+        self.kwargs = kwargs
+
+    def extract(self):
+        return self.spark.read.csv(self.filepath, **self.kwargs)
 
 
 class SparkParquetExtractor(Extractor):
     """Extracts Parquet files into Spark DataFrame.
     """
 
-    def __init__(self, spark):
-        super().__init__(_readers.SparkParquetReader(spark))
+    def __init__(self, spark, filepath, **kwargs):
+        self.spark = spark
+        self.filepath = filepath
+        self.kwargs = kwargs
+
+    def extract(self):
+        return self.spark.read.parquet(self.filepath, **self.kwargs)
 
 
-
-
+factory = object_factory.ObjectFactory.create_from_base(Extractor)
 
