@@ -3,9 +3,9 @@ from typing import List, Tuple, Dict, Union
 from . import sparkconfigs
 
 
-class CloudConfig:
-    """CloudConfig objects store spark configuration values to establish
-    connection with cloud services.
+class DefaultConfig:
+    """:class:`DefaultConfig` collects spark configuration values into a single
+    portable object.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ class CloudConfig:
                 return conf
 
 
-class GoogleConfig(CloudConfig):
+class Google(DefaultConfig):
     """Google Context.
     """
 

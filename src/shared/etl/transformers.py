@@ -4,6 +4,8 @@ import sparkml_base_classes
 from pyspark import keyword_only
 from pyspark.sql import functions as F
 
+from . import object_factory
+
 
 class Transformer(sparkml_base_classes.TransformerBaseClass):
     @keyword_only
@@ -84,7 +86,8 @@ class ColumnSplitTransformer(Transformer):
     """
 
     @keyword_only
-    def __init__(self, input_col=None, output_cols=None, pattern=None, drop=True):
+    def __init__(self, input_col=None, output_cols=None, pattern=None,
+                 drop=True):
         super().__init__()
 
     def _transform(self, ddf):
@@ -113,3 +116,6 @@ class ColumnTypesTransformer(Transformer):
             return self.TYPES_MAP[name]
         except KeyError:
             raise
+
+
+factory = object_factory.ObjectFactory.create_from_base(Transformer)

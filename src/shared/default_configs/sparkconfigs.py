@@ -23,7 +23,7 @@ class GoogleAuthKeyfile(SparkConfig):
     def __init__(self, keyfile="/etc/cloudauth/google/keyfile.json"):
         value = os.environ.get('GOOGLE_KEYFILE', keyfile)
         super().__init__(
-            key="spark.hadoop.google.cloud.auth.service.account.json.keyfile",
+            key="spark.hadoop.google.default_configs.auth.service.account.json.keyfile",
             value=value
         )
 
@@ -31,7 +31,7 @@ class GoogleAuthKeyfile(SparkConfig):
 class GoogleAuthEnable(SparkConfig):
     def __init__(self):
         super().__init__(
-            key="spark.hadoop.google.cloud.auth.service.account.enable",
+            key="spark.hadoop.google.default_configs.auth.service.account.enable",
             value="true"
         )
 
@@ -43,5 +43,5 @@ class GoogleAFS(SparkConfig):
     def __init__(self):
         super().__init__(
             key="spark.hadoop.fs.AbstractFileSystem.gs.impl",
-            value="com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS"
+            value="com.google.default_configs.hadoop.fs.gcs.GoogleHadoopFS"
         )
