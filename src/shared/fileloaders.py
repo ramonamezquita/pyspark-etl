@@ -1,8 +1,7 @@
 import json
 import os
+import re
 from typing import Union, Dict
-
-from pyspark import SparkFiles
 
 
 def exists(filepath: str) -> bool:
@@ -65,6 +64,7 @@ class JSONFileLoader:
     """
 
     def __init__(self, root=""):
+        self.root = root
         self._reader = FileReader(extension='.json', root=root)
 
     def load_file(self, filepath: str, encoding='utf-8', params=None) -> Dict:
@@ -92,6 +92,12 @@ class JSONFileLoader:
 
         return json.loads(file)
 
+    def load_with_regex(self, pattern: str, encoding='utf-8', params=None):
+        for filename in os.listdir(self.root):
+            filename = os.path.splitext(filename)[0]  # Remove extension.
+            if re.search(pattern, string=filename):
+                return self.load_file(filename, encoding, params)
+
     def replace_params(self, file: str, params: Dict):
         """Replaces params in file.
 
@@ -111,9 +117,3 @@ class JSONFileLoader:
 
     def read(self, filepath):
         return self._reader.read(filepath)
-
-
-class SparkJSONFileLoader(JSONFileLoader):
-
-    def __init__(self):
-        super().__init__(root=SparkFiles.getRootDirectory())

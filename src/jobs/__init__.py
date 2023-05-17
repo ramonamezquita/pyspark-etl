@@ -1,3 +1,1 @@
-from . import (
-    etl_job
-)
+from .etl import GoogleETL

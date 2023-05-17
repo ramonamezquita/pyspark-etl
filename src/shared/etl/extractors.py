@@ -45,5 +45,5 @@ class SparkParquetExtractor(Extractor):
         return self.spark.read.parquet(self.filepath, **self.kwargs)
 
 
-factory = object_factory.ObjectFactory.create_from_base(Extractor)
+factory = object_factory.ObjectFactory.from_base(Extractor)
 

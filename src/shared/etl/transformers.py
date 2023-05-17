@@ -118,4 +118,4 @@ class ColumnTypesTransformer(Transformer):
             raise
 
 
-factory = object_factory.ObjectFactory.create_from_base(Transformer)
+factory = object_factory.ObjectFactory.from_base(Transformer)

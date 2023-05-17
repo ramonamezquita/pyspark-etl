@@ -5,14 +5,17 @@ Credits to:
 https://github.com/AlexIoannides/pyspark-example-project
 """
 
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
+from .default_configs import DefaultConfig
 
 from pyspark.sql import SparkSession
 
 
 def start_spark(
-        app_name: str = 'my_spark_app', master: str = 'yarn',
-        spark_config: Optional[List[Tuple]] = None) -> SparkSession:
+        app_name: str = 'my_spark_app',
+        master: str = 'yarn',
+        spark_config: Optional[Union[List[Tuple], DefaultConfig]] = None
+) -> SparkSession:
     """Starts a Spark session on the worker node and registers the Spark
         application with the cluster.
 

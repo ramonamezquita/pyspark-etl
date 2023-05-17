@@ -8,22 +8,20 @@ from . import (
     loaders,
     transformers
 )
-from . import fileloaders
 
 
-class ETLService:
-    """Entry point for ETL service.
+class ETLCreator:
+    """Entrypoint for ETL service.
     """
 
-    def __init__(self):
-        self._file_loader = fileloaders.SparkJSONFileLoader()
+    def __init__(self, spark: SparkSession, etl_data: Dict):
+        self._resolver = ETLResolver(spark, etl_data)
 
-    def load_etl_data(self, params=None):
-        return self._file_loader.load_file('etl', params=params)
+    def resolve_etl(self):
+        return self._resolver.resolve()
 
-    def create_etl(self, spark: SparkSession, etl_params=None):
-        etl_data = self.load_etl_data(etl_params)
-        resolved = ETLResolver(spark, etl_data).resolve()
+    def create(self):
+        resolved = self.resolve_etl()
         return ETL(**resolved)
 
 
@@ -38,6 +36,10 @@ class ETLResolver:
     def __init__(self, spark: SparkSession, etl_data: Dict):
         self.spark = spark
         self.etl_data = etl_data
+        self._check_etl_data()
+
+    def _check_etl_data(self):
+        pass
 
     def resolve_extractor(self) -> extractors.Extractor:
         """

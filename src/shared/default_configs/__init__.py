@@ -1,6 +1,26 @@
-from typing import List, Tuple, Dict, Union
+from typing import List, Dict, Union
 
 from . import sparkconfigs
+
+
+class _DefaultConfigIter:
+
+    def __init__(self, default_config):
+        self.default_config = default_config
+        self._conf_size = len(default_config.conf)
+        self._current_index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._current_index < self._conf_size:
+            current_conf = self.default_config.conf[self._current_index]
+            key, value = current_conf.key, current_conf.value
+            self._current_index += 1
+            return key, value
+
+        raise StopIteration
 
 
 class DefaultConfig:
@@ -14,23 +34,19 @@ class DefaultConfig:
     """
 
     def __init__(self, conf: List[sparkconfigs.SparkConfig]):
-        self._conf = conf
+        self.conf = conf
+
+    def __iter__(self):
+        return _DefaultConfigIter(self)
 
     def dict(self) -> Dict:
         d = {}
-        for conf in self._conf:
+        for conf in self.conf:
             d[conf.key] = conf.value
         return d
 
-    def pairs(self) -> List[Tuple]:
-        pairs = []
-        for config in self._conf:
-            pairs.append((config.key, config.value))
-
-        return pairs
-
-    def get_from_key(self, key) -> Union[None, sparkconfigs.SparkConfig]:
-        for conf in self._conf:
+    def get(self, key) -> Union[None, sparkconfigs.SparkConfig]:
+        for conf in self.conf:
             if key == conf.key:
                 return conf
 
