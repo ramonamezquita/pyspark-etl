@@ -14,7 +14,7 @@ class Loader(ABC):
         pass
 
 
-class Parquet(Loader):
+class ParquetLoader(Loader):
 
     def __init__(
             self,

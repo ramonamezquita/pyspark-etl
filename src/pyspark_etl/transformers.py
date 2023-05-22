@@ -102,9 +102,3 @@ class ColumnTypesTransformer(TransformerBaseClass):
             return self.TYPES_MAP[name]
         except KeyError:
             raise
-<<<<<<< Updated upstream:src/shared/etl/transformers.py
-
-
-factory = object_factory.ObjectFactory.create_from_base(Transformer)
-=======
->>>>>>> Stashed changes:src/pyspark_etl/transformers.py

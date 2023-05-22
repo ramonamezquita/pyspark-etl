@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Type, Any, Dict
 
 
 class ObjectFactory:
@@ -20,10 +20,10 @@ class ObjectFactory:
         """
         self._types[name] = type
 
-    def get_type(self, name: str) -> Type[Any]:
+    def get_types(self) -> Dict[str, Type]:
         """Returns type associated to ``name``
         """
-        return self._types.get(name)
+        return self._types
 
     def create(self, name: str, **kwargs) -> Any:
         """Creates instance of the type associated to ``name``.
@@ -32,35 +32,10 @@ class ObjectFactory:
         ----------
         name : str
         """
-        cls = self.get_type(name)
+        cls = self._types.get(name)
         if not cls:
             raise ValueError(name)
         return cls(**kwargs)
-
-    @classmethod
-<<<<<<< Updated upstream:src/shared/etl/object_factory.py
-    def create_from_base(cls, base_class: Type[Any]) -> "ObjectFactory":
-        """Creates :class:`ObjectFactory` instance whose registered types are
-        all ``base_class`` subclasses.
-=======
-    def from_dict(cls, d: Dict[str, Type[Any]]) -> "ObjectFactory":
-        """Creates :class:`ObjectFactory` instance from dictionary.
-
-        Parameters
-        ----------
-        d : dict
-
-        Returns
-        -------
-        object_factory : ObjectFactory
-        """
-
-        object_factory = cls()
-
-        for name, type in d.items():
-            object_factory.register_type(name, type)
-
-        return object_factory
 
     @classmethod
     def from_base(cls, base_class: Type[Any]) -> "ObjectFactory":
@@ -69,7 +44,6 @@ class ObjectFactory:
         The registered types are all ``base_class`` subclasses, and they are
         registered using their __name__ attribute,
         that is, subcls.__name__.
->>>>>>> Stashed changes:src/pyspark_etl/object_factory.py
 
         Parameters
         ----------
@@ -85,3 +59,23 @@ class ObjectFactory:
             object_factory.register_type(name, subcls)
 
         return object_factory
+
+
+class SubclassesFactory:
+    """Creates factory of ``base_class``'s  subclasses.
+
+    Parameters
+    ----------
+    base : class
+        Every derived class in ``base_class`` will be available for
+        creation.
+    """
+
+    def __init__(self, base: Type[Any]):
+        self.object_factory = ObjectFactory.from_base(base)
+
+    def __call__(self, name, **kwargs):
+        return self.object_factory.create(name, **kwargs)
+
+    def get_types(self):
+        return self.object_factory.get_types()

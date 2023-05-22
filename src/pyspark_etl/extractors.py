@@ -17,7 +17,7 @@ class Extractor(ABC):
         pass
 
 
-class CSV(Extractor):
+class CSVExtractor(Extractor):
     """Extracts CSV files into Spark DataFrame.
     """
 
@@ -30,7 +30,7 @@ class CSV(Extractor):
         return self.spark.read.csv(self.filepath, **self.kwargs)
 
 
-class Parquet(Extractor):
+class ParquetExtractor(Extractor):
     """Extracts Parquet files into Spark DataFrame.
     """
 
@@ -41,10 +41,3 @@ class Parquet(Extractor):
 
     def extract(self):
         return self.spark.read.parquet(self.filepath, **self.kwargs)
-<<<<<<< Updated upstream:src/shared/etl/extractors.py
-
-
-factory = object_factory.ObjectFactory.create_from_base(Extractor)
-
-=======
->>>>>>> Stashed changes:src/pyspark_etl/extractors.py
