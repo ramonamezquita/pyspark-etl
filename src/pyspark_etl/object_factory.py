@@ -38,9 +38,38 @@ class ObjectFactory:
         return cls(**kwargs)
 
     @classmethod
+<<<<<<< Updated upstream:src/shared/etl/object_factory.py
     def create_from_base(cls, base_class: Type[Any]) -> "ObjectFactory":
         """Creates :class:`ObjectFactory` instance whose registered types are
         all ``base_class`` subclasses.
+=======
+    def from_dict(cls, d: Dict[str, Type[Any]]) -> "ObjectFactory":
+        """Creates :class:`ObjectFactory` instance from dictionary.
+
+        Parameters
+        ----------
+        d : dict
+
+        Returns
+        -------
+        object_factory : ObjectFactory
+        """
+
+        object_factory = cls()
+
+        for name, type in d.items():
+            object_factory.register_type(name, type)
+
+        return object_factory
+
+    @classmethod
+    def from_base(cls, base_class: Type[Any]) -> "ObjectFactory":
+        """Creates :class:`ObjectFactory` instance from base class.
+
+        The registered types are all ``base_class`` subclasses, and they are
+        registered using their __name__ attribute,
+        that is, subcls.__name__.
+>>>>>>> Stashed changes:src/pyspark_etl/object_factory.py
 
         Parameters
         ----------

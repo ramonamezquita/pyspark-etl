@@ -1,23 +1,9 @@
-from abc import abstractmethod
-
-import sparkml_base_classes
 from pyspark import keyword_only
 from pyspark.sql import functions as F
-
-from . import object_factory
-
-
-class Transformer(sparkml_base_classes.TransformerBaseClass):
-    @keyword_only
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def _transform(self, ddf):
-        pass
+from sparkml_base_classes import TransformerBaseClass
 
 
-class IdentityTransformer(Transformer):
+class IdentityTransformer(TransformerBaseClass):
     @keyword_only
     def __init__(self):
         super().__init__()
@@ -26,7 +12,7 @@ class IdentityTransformer(Transformer):
         return ddf
 
 
-class ColumnNamesTransformer(Transformer):
+class ColumnNamesTransformer(TransformerBaseClass):
     """Renames columns.
 
     Parameters
@@ -46,7 +32,7 @@ class ColumnNamesTransformer(Transformer):
         return ddf
 
 
-class ToDateTransformer(Transformer):
+class DatetimeTransformer(TransformerBaseClass):
     """Converts columns to date type.
 
     Parameters
@@ -67,7 +53,7 @@ class ToDateTransformer(Transformer):
         return ddf.withColumn(self._col, date_col)
 
 
-class ColumnSplitTransformer(Transformer):
+class ColumnSplitTransformer(TransformerBaseClass):
     """Split strings around given separator/delimiter.
 
     Parameters
@@ -101,7 +87,7 @@ class ColumnSplitTransformer(Transformer):
         return ddf
 
 
-class ColumnTypesTransformer(Transformer):
+class ColumnTypesTransformer(TransformerBaseClass):
     @keyword_only
     def __init__(self, column_types=None):
         super().__init__()
@@ -116,6 +102,9 @@ class ColumnTypesTransformer(Transformer):
             return self.TYPES_MAP[name]
         except KeyError:
             raise
+<<<<<<< Updated upstream:src/shared/etl/transformers.py
 
 
 factory = object_factory.ObjectFactory.create_from_base(Transformer)
+=======
+>>>>>>> Stashed changes:src/pyspark_etl/transformers.py

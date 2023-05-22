@@ -1,8 +1,9 @@
-from typing import Dict
+from typing import Dict, Union
 
 from pyspark.ml import Pipeline
 from pyspark.sql import SparkSession
 
+<<<<<<< Updated upstream:src/shared/etl/etl.py
 from . import (
     extractors,
     loaders,
@@ -13,17 +14,35 @@ from . import fileloaders
 
 class ETLService:
     """Entry point for ETL service.
+=======
+from . import transformers
+from .extractors import Extractor
+from .loaders import Loader
+from .object_factory import SubclassesFactory
+
+
+class ETLCreator:
+    """Factory for :class:`ETLs` instances.
+>>>>>>> Stashed changes:src/pyspark_etl/etl.py
     """
 
     def __init__(self):
         self._file_loader = fileloaders.SparkJSONFileLoader()
 
+<<<<<<< Updated upstream:src/shared/etl/etl.py
     def load_etl_data(self, params=None):
         return self._file_loader.load_file('etl', params=params)
 
     def create_etl(self, spark: SparkSession, etl_params=None):
         etl_data = self.load_etl_data(etl_params)
         resolved = ETLResolver(spark, etl_data).resolve()
+=======
+    def get_resolver(self):
+        return self._resolver
+
+    def create(self):
+        resolved = self._resolver.resolve()
+>>>>>>> Stashed changes:src/pyspark_etl/etl.py
         return ETL(**resolved)
 
 
@@ -38,37 +57,83 @@ class ETLResolver:
     def __init__(self, spark: SparkSession, etl_data: Dict):
         self.spark = spark
         self.etl_data = etl_data
+<<<<<<< Updated upstream:src/shared/etl/etl.py
+=======
 
-    def resolve_extractor(self) -> extractors.Extractor:
+        self._factories = {}
+        self._register_factories()
+        self._check_etl_data()
+
+    def _check_etl_data(self):
+        pass
+>>>>>>> Stashed changes:src/pyspark_etl/etl.py
+
+    def get_factory(self, name: str) -> Union[SubclassesFactory, None]:
+        """Returns factory.
+
+        Parameters
+        ----------
+        name : str
+            Name of the registered factory
+
+        Returns
+        -------
+        SubclassesFactory or None
+        """
+        return self._factories.get(name)
+
+    def _register_factories(self) -> None:
+        """Registers factories.
+
+        Once registered, factories are available through private method
+        :meth:`_get_factory`.
+        """
+
+        base_classes = {
+            'extractors': Extractor,
+            'transformers': transformers.TransformerBaseClass,
+            'loaders': Loader
+        }
+
+        for name, cls in base_classes.items():
+            self._factories[name] = SubclassesFactory(cls)
+
+    def resolve_extractor(self) -> Extractor:
         """
         """
+        factory = self.get_factory('extractors')
         extract_data = self.etl_data['extract']
-        return extractors.factory.create(spark=self.spark, **extract_data)
+        return factory(spark=self.spark, **extract_data)
 
     def resolve_transformer(self) -> Pipeline:
         """
         """
+        factory = self.get_factory('transformers')
         transform_data = self.etl_data['transform']
         stages = []
 
         for stage in transform_data['stages']:
-            trans = transformers.factory.create(**stage)
+            trans = factory(**stage)
             stages.append(trans)
 
         return Pipeline(stages=stages)
 
-    def resolve_loader(self) -> loaders.Loader:
-        pass
+    def resolve_loader(self) -> Loader:
+        factory = self.get_factory('loaders')
+        load_data = self.etl_data['load']
+        return factory(**load_data)
 
     def resolve(self) -> Dict:
         """
         """
         extractor = self.resolve_extractor()
         transformer = self.resolve_transformer()
+        loader = self.resolve_loader()
 
         return {
             'extractor': extractor,
-            'transformer': transformer
+            'transformer': transformer,
+            'loader': loader
         }
 
 
@@ -98,9 +163,9 @@ class ETL:
 
     def __init__(
             self,
-            extractor: extractors.Extractor,
-            loader: loaders.Loader,
-            transformer: transformers.Transformer =
+            extractor: Extractor,
+            loader: Loader,
+            transformer: transformers.TransformerBaseClass =
             transformers.IdentityTransformer()
     ):
         self.extractor = extractor
@@ -125,4 +190,4 @@ class ETL:
     def transform(self, data):
         """Transforms the data using the associated :class:`Transformer`.
         """
-        return self.transformer.transform(data)
+        return self.transformer.fit(data).transform(data)

@@ -8,13 +8,13 @@ class Loader(ABC):
     Loaders load the data into the end target.
     """
 
-    def load(self, ddf):
+    def load(self, ddf) -> None:
         """Base extract method, must be instantiated in extended classes.
         """
         pass
 
 
-class SparkParquetLoader(Loader):
+class Parquet(Loader):
 
     def __init__(
             self,

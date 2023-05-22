@@ -5,8 +5,11 @@
 
 # Node artifact files
 node_modules/
+
+# Local folders
 dist/
 build/
+configs/
 
 # Compiled Java class files
 *.class

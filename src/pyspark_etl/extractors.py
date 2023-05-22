@@ -4,8 +4,6 @@ Extractors classes.
 
 from abc import ABC, abstractmethod
 
-from . import object_factory
-
 
 class Extractor(ABC):
     """Base abstract class. All Extractors classes extend from this.
@@ -19,7 +17,7 @@ class Extractor(ABC):
         pass
 
 
-class SparkCSVExtractor(Extractor):
+class CSV(Extractor):
     """Extracts CSV files into Spark DataFrame.
     """
 
@@ -32,7 +30,7 @@ class SparkCSVExtractor(Extractor):
         return self.spark.read.csv(self.filepath, **self.kwargs)
 
 
-class SparkParquetExtractor(Extractor):
+class Parquet(Extractor):
     """Extracts Parquet files into Spark DataFrame.
     """
 
@@ -43,7 +41,10 @@ class SparkParquetExtractor(Extractor):
 
     def extract(self):
         return self.spark.read.parquet(self.filepath, **self.kwargs)
+<<<<<<< Updated upstream:src/shared/etl/extractors.py
 
 
 factory = object_factory.ObjectFactory.create_from_base(Extractor)
 
+=======
+>>>>>>> Stashed changes:src/pyspark_etl/extractors.py
